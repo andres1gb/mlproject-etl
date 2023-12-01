@@ -30,7 +30,7 @@ class Extractor:
             Logger.log("Start date %s is in the future, month skipped" % start)
             return False
 
-        end = MonthString.last_day()
+        end = MonthString.last_day(str(year) + '-' + str(month), '-')
         if end > now:  # limit the query to current day
             end = datetime.datetime(year, month, now.day)
 
