@@ -1,6 +1,6 @@
 import datetime
 import argparse
-from sources import aemet, ree
+from sources import aemet, ree, mibgas
 from utils.logger import Logger
 from utils.dates import MonthString
 
@@ -20,12 +20,14 @@ def parse_args():
     return vars(parser.parse_args())
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':    
     args = parse_args()
 
     source = args['ds']
     start = args['f']
     end = args['t']
+
+    source = "mibgas"
 
     if not MonthString.is_valid(start):
         Logger.log("Starting month is not valid: %s" % start)
@@ -38,7 +40,10 @@ if __name__ == '__main__':
             aemet.Extractor.get_data(start, end)
         case "ree":
             ree.Extractor.get_data(start, end)
+        case "mibgas":
+            mibgas.Extractor.get_data(start, end)
         case None:
             aemet.Extractor.get_data(start, end)
             ree.Extractor.get_data(start, end)
+            mibgas.Extractor.get_data(start, end)
 

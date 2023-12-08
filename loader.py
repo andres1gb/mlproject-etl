@@ -16,7 +16,8 @@ class Loader:
         dest = open('data/complete.csv', 'w')
         writer = csv.writer(dest)
         headers = ['day'] + Loader.extract_headers(start, end)
-        writer.writerow(headers)
+        normalized_headers = Loader.normalize_headers(headers)
+        writer.writerow(normalized_headers)
 
         for day, data in Loader.read_range(start, end):
             row = {}
@@ -29,6 +30,15 @@ class Loader:
             writer.writerow(list(row.values()))
 
         dest.close()
+
+    @classmethod 
+    def normalize_headers(cls, headers):
+        normalized_headers = []
+        for header in headers:
+            if header[0].isdigit():
+                header = "col_" + header
+            normalized_headers.append(header)
+        return normalized_headers
 
     @classmethod
     def extract_headers(cls, start, end):
