@@ -25,7 +25,7 @@ import json
 import os
 
 from extractor import DEFAULT_MONTH_FROM
-from sources import aemet, ree
+from sources import aemet, ree, mibgas
 from utils.dates import MonthString
 from dateutil.relativedelta import relativedelta
 
@@ -50,6 +50,7 @@ class Transformer:
                         day = station['fecha']
                         result[day] = {}
                         prices = ree.Extractor.get_data_from_file(day)
+                        gas_price = mibgas.GasPrice.get_price_applied(day, mibgas.Extractor.get_data_from_file(day))
                         price = 0
                         if prices['included'][0]['id'] == "600":
                             spot_prices = prices['included'][0]['attributes']['values']
@@ -58,6 +59,7 @@ class Transformer:
                         for hour in range(0, 24):
                             price += spot_prices[hour]['value']
                         result[day]['price'] = price/24
+                        result[day]['gas_price'] = gas_price
                     prefix = station['indicativo']
                     if 'tmin' in station:
                         result[day][prefix + '_t_min'] = float(station['tmin'].replace(",", "."))
@@ -81,7 +83,7 @@ class Transformer:
 def parse_args():
     parser = argparse.ArgumentParser(
         prog='transformer.py',
-        description='Prepares data from Aemet and REE for analysis',
+        description='Prepares data from Aemet, REE and Mibgas for analysis',
         epilog='Created by Andrés Purriños 2023'
     )
     current_month = MonthString.from_date(datetime.datetime.now())
@@ -96,6 +98,6 @@ if __name__ == '__main__':
     start = args['f']
     end = args['t']
 
-    Transformer.transform_data(start, end)
-    # Transformer.transform_data('2021-05', '2021-05')
+    #Transformer.transform_data(start, end)
+    Transformer.transform_data('2023-05', '2023-05')
 
